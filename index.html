@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>新增排程</title>
+
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont;
+    background: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 400px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  textarea {
+    height: 120px;
+    resize: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #4CAF50;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #43a047;
+  }
+
+  .success {
+    margin-top: 20px;
+    color: green;
+    text-align: center;
+  }
+
+  .error {
+    margin-top: 20px;
+    color: red;
+    text-align: center;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>📅 新增排程</h2>
+
+  <form id="form">
+    <input type="date" id="date" required>
+    <textarea id="task" placeholder="輸入事項..." required></textarea>
+    <button type="submit">✅ 儲存記錄</button>
+  </form>
+
+  <div id="message"></div>
+</div>
+
+<script>
+  const url = "https://script.google.com/macros/s/AKfycbzf8QSFaztIH3uJeJl0ZPetDRdx-RmMG9T7rw_IbPRgTGUwzpcDnaRI9NZL5zFQSlVMiA/exec";
+
+  document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const date = document.getElementById("date").value;
+    const task = document.getElementById("task").value;
+    const msg = document.getElementById("message");
+
+    msg.innerHTML = "⏳ 傳送中...";
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ date, task })
+      });
+
+      const data = await res.json();
+
+      if (data.status === "success") {
+        msg.innerHTML = '<div class="success">✅ 記錄成功！</div>';
+        document.getElementById("form").reset();
+      } else {
+        msg.innerHTML = '<div class="error">❌ ' + data.message + '</div>';
+      }
+
+    } catch (err) {
+      msg.innerHTML = '<div class="error">❌ 發生錯誤</div>';
+    }
+  });
+</script>
+
+</body>
+</html>
